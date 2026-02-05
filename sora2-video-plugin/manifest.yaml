@@ -1,18 +1,45 @@
 version: 0.0.1
+type: "plugin"
 author: leonluo
 name: sora2-video-plugin
 label:
   en_US: Sora2 Video Generation
   zh_Hans: Sora2视频生成
+  zh_Hant: Sora2視頻生成
 description:
   en_US: Generate videos using Sora2 AI model from Zhenzhen platform
   zh_Hans: 使用贞贞平台Sora2 AI模型生成视频
-icon: video
+  zh_Hant: 使用貞貞平台Sora2 AI模型生成視頻
+created_at: "2025-02-05T10:00:00Z"
+icon: icon.svg
 tags:
   - video
   - sora2
   - ai
-created_at: "2025-02-05T00:00:00Z"
-tools:
-  - text_to_video
-  - image_to_video
+resource:
+  memory: 268435456
+permission:
+  tool:
+    enabled: true
+  model:
+    enabled: false
+  llm:
+    enabled: false
+  endpoint:
+    enabled: false
+  app:
+    enabled: false
+  storage:
+    enabled: false
+plugins:
+  tools:
+    - provider/sora2.yaml
+meta:
+  version: 0.0.1
+  arch:
+    - amd64
+    - arm64
+  runner:
+    language: python
+    version: "3.12"
+  entrypoint: main
