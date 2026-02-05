@@ -1,0 +1,610 @@
+schema_version: 1.0.0
+name: sora
+id: 7592564169614950426
+description: "sora2 的简单工作流从输入到获取url"
+mode: workflow
+icon: plugin_icon/workflow.png
+nodes:
+    - id: "100001"
+      type: start
+      title: 开始
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Start-v2.jpg
+      description: "工作流的起始节点，用于设定启动工作流需要的信息"
+      position:
+        x: -397.1285309268005
+        y: -471.96838723416613
+      parameters:
+        node_outputs:
+            images:
+                type: list
+                items:
+                    type: image
+                    value: null
+                required: true
+                value: null
+            prompt:
+                type: string
+                required: true
+                value: null
+    - id: "900001"
+      type: end
+      title: 结束
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-End-v2.jpg
+      description: "工作流的最终节点，用于返回工作流运行后的结果信息"
+      position:
+        x: 1987.7146502682754
+        y: -372.81194933960467
+      parameters:
+        content:
+            type: string
+            value:
+                content: 工作流结束
+                type: literal
+        streamingOutput: false
+        terminatePlan: useAnswerContent
+    - id: "122323"
+      type: http
+      title: 请求模型
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-HTTP.png
+      description: "用于发送API请求，从接口返回数据"
+      position:
+        x: -364.1005104768252
+        y: -247.63872187150093
+      parameters:
+        apiInfo:
+            method: POST
+            url: https://中转站网站网址
+        auth:
+            authData:
+                customData:
+                    addTo: header
+            authOpen: false
+            authType: BEARER_AUTH
+        body:
+            bodyData:
+                binary:
+                    fileURL:
+                        type: string
+                        value:
+                            content:
+                                blockID: ""
+                                name: ""
+                                source: block-output
+                            rawMeta:
+                                type: 1
+                            type: ref
+                json: |-
+                    {
+                      "images": {{block_output_100001.images}},
+                      "model": "sora-2-all",
+                      "orientation": "portrait",
+                      "prompt": "{{block_output_100001.prompt}}",
+                      "size": "large",
+                      "duration": 15,
+                      "watermark": false
+                    }
+            bodyType: JSON
+        headers:
+            - name: Content-Type
+              input:
+                type: string
+                value: "application/json"
+            - name: Accept
+              input:
+                type: string
+                value: "application/json"
+            - name: Authorization
+              input:
+                type: string
+                value: "Bearer (你的令牌)"
+        node_outputs:
+            body:
+                type: string
+                value: null
+            headers:
+                type: string
+                value: null
+            statusCode:
+                type: integer
+                value: null
+        params: []
+        setting:
+            retryTimes: 3
+            timeout: 120
+        settingOnError: {}
+    - id: "179056"
+      type: code
+      title: 获取taskId
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Code-v2.jpg
+      description: "编写代码，处理输入变量来生成返回值"
+      version: v2
+      position:
+        x: 153.47203629113187
+        y: -372.81194933960467
+      parameters:
+        code: |-
+            async function main({ params }: Args): Promise<Output> {
+                // 1. 从 params.input 中获取 body 字符串
+                // 注意：这里假设 params.input 是整个 HTTP 响应对象
+                const bodyStr = params.input;
+
+                // 2. 将字符串格式的 body 解析为 JSON 对象
+                // 因为 body 的值是一个字符串 "{\"id\":...}"，所以需要 JSON.parse
+                let taskId = "";
+                try {
+                    const bodyObj = JSON.parse(bodyStr);
+                    taskId = bodyObj.id;
+                } catch (e) {
+                    // 防止解析失败导致运行报错
+                    console.log("JSON 解析失败:", e);
+                }
+
+                // 3. 构建输出对象，返回 taskId
+                const ret = {
+                    "taskId": taskId
+                };
+
+                return ret;
+            }
+        language: 5
+        node_inputs:
+            - name: input
+              input:
+                value:
+                    path: body
+                    ref_node: "122323"
+        node_outputs:
+            taskId:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 60000
+    - id: "182246"
+      type: loop
+      title: 循环
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Loop-v2.jpg
+      description: "用于通过设定循环次数和逻辑，重复执行一系列任务"
+      position:
+        x: 642.4720362911319
+        y: -372.81194933960467
+      canvas_position:
+        x: 383.79605365735847
+        y: 108.36127812849907
+      parameters:
+        loopCount:
+            type: integer
+            value:
+                content: 10
+                rawMeta:
+                    type: 2
+                type: literal
+        loopType: infinite
+        node_outputs:
+            output:
+                value:
+                    type: list
+                    items:
+                        type: string
+                        value: null
+                    value:
+                        path: url
+                        ref_node: "104848"
+            status:
+                value:
+                    type: list
+                    items:
+                        type: string
+                        value: null
+                    value:
+                        path: status
+                        ref_node: "104848"
+        variableParameters:
+            - name: var_taskId
+              input:
+                value:
+                    path: taskId
+                    ref_node: "179056"
+      nodes:
+        - id: "194734"
+          type: http
+          title: 用task请求查询接口获取url
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-HTTP.png
+          description: "用于发送API请求，从接口返回数据"
+          position:
+            x: -573.5740173662266
+            y: 46.82733229914128
+          parameters:
+            apiInfo:
+                method: GET
+                url: https://中转站网址
+            auth:
+                authData:
+                    customData:
+                        addTo: header
+                authOpen: false
+                authType: BEARER_AUTH
+            body:
+                bodyData:
+                    binary:
+                        fileURL:
+                            type: string
+                            value:
+                                content:
+                                    blockID: ""
+                                    name: ""
+                                    source: block-output
+                                rawMeta:
+                                    type: 1
+                                type: ref
+                bodyType: EMPTY
+            headers:
+                - name: Content-Type
+                  input:
+                    type: string
+                    value: "application/json"
+                - name: Accept
+                  input:
+                    type: string
+                    value: "application/json"
+                - name: Authorization
+                  input:
+                    type: string
+                    value: "Bearer （你的令牌）"
+            node_outputs:
+                body:
+                    type: string
+                    value: null
+                headers:
+                    type: string
+                    value: null
+                statusCode:
+                    type: integer
+                    value: null
+            params:
+                - name: id
+                  input:
+                    type: string
+                    value:
+                        path: var_taskId
+                        ref_node: "182246"
+            setting:
+                retryTimes: 1
+                timeout: 600
+            settingOnError: {}
+        - id: "171705"
+          type: break
+          title: 终止循环
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Break-v2.jpg
+          description: "用于立即终止当前所在的循环，跳出循环体"
+          position:
+            x: 683.9259826337734
+            y: -89
+          parameters: {}
+        - id: "149650"
+          type: continue
+          title: 继续循环
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Continue-v2.jpg
+          description: "用于终止当前循环，执行下次循环"
+          position:
+            x: 1090.9259826337734
+            y: 176.75
+          parameters: {}
+        - id: "178533"
+          type: plugin
+          title: 定时器间隔
+          icon: https://p9-flow-product-sign.byteimg.com/tos-cn-i-13w3uml6bg/df99d7b570c841deb652d49ef3106d01~tplv-13w3uml6bg-resize:128:128.image?rk3s=2e2596fd&x-expires=1770304516&x-signature=xiPZqhWldh2jafXimVhEDV3FR2Q%3D
+          description: "延时等待，时间单位为毫秒ms"
+          position:
+            x: 683.9259826337734
+            y: 141.75
+          parameters:
+            apiParam:
+                - name: apiID
+                  input:
+                    type: string
+                    value: "7510435340935774223"
+                - name: apiName
+                  input:
+                    type: string
+                    value: "Delay_Wait"
+                - name: pluginID
+                  input:
+                    type: string
+                    value: "7510435340935757839"
+                - name: pluginName
+                  input:
+                    type: string
+                    value: "延时等待"
+                - name: pluginVersion
+                  input:
+                    type: string
+                    value: ""
+                - name: tips
+                  input:
+                    type: string
+                    value: ""
+                - name: outDocLink
+                  input:
+                    type: string
+                    value: ""
+            node_inputs:
+                - name: milliseconds
+                  input:
+                    type: integer
+                    value: 15000
+            node_outputs:
+                delay_milliseconds:
+                    type: integer
+                    required: true
+                    value: null
+                delay_seconds:
+                    type: float
+                    required: true
+                    value: null
+                status:
+                    type: string
+                    required: true
+                    value: null
+            settingOnError:
+                processType: 1
+                retryTimes: 0
+                timeoutMs: 180000
+        - id: "153682"
+          type: condition
+          title: 判断是否生成视频url
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Condition-v2.jpg
+          description: "连接多个下游分支，若设定的条件成立则仅运行对应的分支，若均不成立则只运行“否则”分支"
+          position:
+            x: 280.4259826337734
+            y: 23.75
+          parameters:
+            branches:
+                - condition:
+                    conditions:
+                        - left:
+                            input:
+                                type: string
+                                value:
+                                    path: url
+                                    ref_node: "104848"
+                          operator: 10
+                    logic: 2
+                - condition:
+                    conditions:
+                        - left:
+                            input:
+                                type: string
+                                value:
+                                    path: status
+                                    ref_node: "104848"
+                          operator: 1
+                          right:
+                            input:
+                                type: string
+                                value: "failed"
+                    logic: 2
+        - id: "104848"
+          type: code
+          title: 获取结果里面的url
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Code-v2.jpg
+          description: "编写代码，处理输入变量来生成返回值"
+          version: v2
+          position:
+            x: -140.0740173662266
+            y: 36.75
+          parameters:
+            code: |-
+                async function main({ params }: Args): Promise<Output> {
+                    // 1. 从 params.input 中获取 body 字符串
+                    // 注意：这里假设 params.input 是整个 HTTP 响应对象
+                    const bodyStr = params.input;
+
+                    // 2. 将字符串格式的 body 解析为 JSON 对象
+                    // 因为 body 的值是一个字符串 "{\"id\":...}"，所以需要 JSON.parse
+                    let url = "";
+                    let status = "";
+                    try {
+                        const bodyObj = JSON.parse(bodyStr);
+                        url = bodyObj.video_url;
+                        status = bodyObj.status;
+                    } catch (e) {
+                        // 防止解析失败导致运行报错
+                        console.log("JSON 解析失败:", e);
+                    }
+
+                    // 3. 构建输出对象，返回 taskId
+                    const ret = {
+                        "url": url,
+                        "status": status
+                    };
+
+                    return ret;
+                }
+            language: 5
+            node_inputs:
+                - name: input
+                  input:
+                    value:
+                        path: body
+                        ref_node: "194734"
+            node_outputs:
+                status:
+                    type: string
+                    value: null
+                url:
+                    type: string
+                    value: null
+            settingOnError:
+                processType: 1
+                retryTimes: 0
+                switch: false
+                timeoutMs: 60000
+      edges:
+        - source_node: "182246"
+          target_node: "194734"
+          source_port: loop-function-inline-output
+        - source_node: "194734"
+          target_node: "104848"
+        - source_node: "153682"
+          target_node: "171705"
+          source_port: "true"
+        - source_node: "153682"
+          target_node: "171705"
+          source_port: true_1
+        - source_node: "178533"
+          target_node: "149650"
+        - source_node: "153682"
+          target_node: "178533"
+          source_port: "false"
+        - source_node: "104848"
+          target_node: "153682"
+    - id: "131892"
+      type: condition
+      title: 判断是否有值
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Condition-v2.jpg
+      description: "连接多个下游分支，若设定的条件成立则仅运行对应的分支，若均不成立则只运行“否则”分支"
+      position:
+        x: 1102.6836765027722
+        y: -385.81194933960467
+      parameters:
+        branches:
+            - condition:
+                conditions:
+                    - left:
+                        input:
+                            type: string
+                            value:
+                                path: url
+                                ref_node: "133935"
+                      operator: 10
+                logic: 2
+    - id: "169304"
+      type: output
+      title: 失败
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Output-v2.jpg
+      description: "节点从“消息”更名为“输出”，支持中间过程的消息输出，支持流式和非流式两种方式"
+      position:
+        x: 1551.3255905645826
+        y: -259.81194933960467
+      parameters:
+        callTransferVoice: true
+        chatHistoryWriting: historyWrite
+        content:
+            type: string
+            value:
+                content: 视频生成失败
+                type: literal
+        node_inputs:
+            - name: status
+              input:
+                type: string
+                value:
+                    path: status
+                    ref_node: "133935"
+        streamingOutput: false
+    - id: "154024"
+      type: output
+      title: 成功
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Output-v2.jpg
+      description: "节点从“消息”更名为“输出”，支持中间过程的消息输出，支持流式和非流式两种方式"
+      position:
+        x: 1551.3255905645826
+        y: -484.96838723416613
+      parameters:
+        callTransferVoice: true
+        chatHistoryWriting: historyWrite
+        content:
+            type: string
+            value:
+                content: 视频url  {{url}}
+                type: literal
+        node_inputs:
+            - name: url
+              input:
+                type: string
+                value:
+                    path: url
+                    ref_node: "133935"
+        streamingOutput: false
+    - id: "133935"
+      type: code
+      title: 处理循环结果
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Code-v2.jpg
+      description: "编写代码，处理输入变量来生成返回值"
+      version: v2
+      position:
+        x: 879.8181794267488
+        y: -602.7050153379338
+      parameters:
+        code: |-
+            async function main({ params }: Args): Promise<Output> {
+
+                // 获取输入
+                const urls = params.urls;
+                const statuss = params.statuss;
+
+                // 3. 构建输出对象，返回 taskId
+                const ret = {
+                    "url": urls[urls?.length -1],
+                    "status": statuss[statuss?.length -1]
+                };
+
+                return ret;
+            }
+        language: 5
+        node_inputs:
+            - name: urls
+              input:
+                type: list
+                items:
+                    type: string
+                    value: null
+                value:
+                    path: output
+                    ref_node: "182246"
+            - name: statuss
+              input:
+                type: list
+                items:
+                    type: string
+                    value: null
+                value:
+                    path: status
+                    ref_node: "182246"
+        node_outputs:
+            status:
+                type: string
+                value: null
+            url:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 60000
+edges:
+    - source_node: "100001"
+      target_node: "122323"
+    - source_node: "169304"
+      target_node: "900001"
+    - source_node: "154024"
+      target_node: "900001"
+    - source_node: "122323"
+      target_node: "179056"
+    - source_node: "179056"
+      target_node: "182246"
+    - source_node: "182246"
+      target_node: "133935"
+      source_port: loop-output
+    - source_node: "133935"
+      target_node: "131892"
+    - source_node: "131892"
+      target_node: "169304"
+      source_port: "false"
+    - source_node: "131892"
+      target_node: "154024"
+      source_port: "true"
