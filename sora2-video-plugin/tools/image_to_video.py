@@ -1,12 +1,14 @@
 import time
 import requests
-from typing import Dict, Any
+from collections.abc import Generator
+from typing import Any, Dict
 from dify_plugin import Tool
+from dify_plugin.entities.tool import ToolInvokeMessage
 
 
 class ImageToVideoTool(Tool):
-    def _invoke(self, tool_parameters: dict) -> str:
-        """图生视频工具 - 使用 Sora2 从图片生成视频"""
+    def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage]:
+        """图生视频工具 - 使用 Sora2 根据图片生成视频"""
         api_key = self.runtime.credentials.get("api_key")
         if not api_key:
             yield self.create_text_message("API Key 未配置")

@@ -1,11 +1,13 @@
 import time
 import requests
-from typing import Dict, Any
+from collections.abc import Generator
+from typing import Any, Dict
 from dify_plugin import Tool
+from dify_plugin.entities.tool import ToolInvokeMessage
 
 
 class TextToVideoTool(Tool):
-    def _invoke(self, tool_parameters: dict) -> str:
+    def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage]:
         """文生视频工具 - 使用 Sora2 生成视频"""
         api_key = self.runtime.credentials.get("api_key")
         if not api_key:
