@@ -1,13 +1,15 @@
+from typing import Any
 from dify_plugin import ToolProvider
+from dify_plugin.errors.tool import ToolProviderCredentialValidationError
 import requests
 
 
 class Sora2Provider(ToolProvider):
-    def _validate_credentials(self, credentials: dict) -> None:
+    def _validate_credentials(self, credentials: dict[str, Any]) -> None:
         """验证 API Key 是否有效"""
         api_key = credentials.get("api_key")
         if not api_key:
-            raise ValueError("API Key is required")
+            raise ToolProviderCredentialValidationError("API Key is required")
 
         # 测试 API 连接
         try:
@@ -17,6 +19,6 @@ class Sora2Provider(ToolProvider):
                 timeout=10
             )
             if response.status_code == 401:
-                raise ValueError("Invalid API Key")
+                raise ToolProviderCredentialValidationError("Invalid API Key")
         except requests.RequestException as e:
-            raise ValueError(f"API connection failed: {str(e)}")
+            raise ToolProviderCredentialValidationError(f"API connection failed: {str(e)}")

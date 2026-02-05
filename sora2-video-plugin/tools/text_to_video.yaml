@@ -86,3 +86,6 @@ parameters:
         label:
           en_US: 9:16 (Portrait)
           zh_Hans: 9:16 (竖屏)
+extra:
+  python:
+    source: tools/text_to_video.py
