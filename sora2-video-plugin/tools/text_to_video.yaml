@@ -1,0 +1,89 @@
+identity:
+  name: text_to_video
+  author: leon luo
+  label:
+    en_US: Text to Video
+    zh_Hans: 文生视频
+  description:
+    en_US: Generate video from text prompt using Sora2
+    zh_Hans: 使用Sora2根据文本描述生成视频
+  icon: video
+parameters:
+  - name: prompt
+    type: string
+    required: true
+    label:
+      en_US: Prompt
+      zh_Hans: 视频描述
+    human_description:
+      en_US: Describe the video you want to generate
+      zh_Hans: 描述你想要生成的视频内容
+    llm_description: Text prompt describing the video content to generate
+    form: llm
+  - name: model
+    type: select
+    required: false
+    default: sora-2
+    label:
+      en_US: Model
+      zh_Hans: 模型
+    human_description:
+      en_US: Choose the Sora2 model version
+      zh_Hans: 选择Sora2模型版本
+    llm_description: Model version to use for video generation
+    form: form
+    options:
+      - value: sora-2
+        label:
+          en_US: Sora 2
+          zh_Hans: Sora 2
+      - value: sora-2-pro
+        label:
+          en_US: Sora 2 Pro
+          zh_Hans: Sora 2 Pro
+  - name: duration
+    type: select
+    required: false
+    default: "10"
+    label:
+      en_US: Duration
+      zh_Hans: 时长
+    human_description:
+      en_US: Video duration (10s, 15s, 25s for Pro)
+      zh_Hans: 视频时长（10秒，15秒，Pro版支持25秒）
+    llm_description: Duration of the generated video
+    form: form
+    options:
+      - value: "10"
+        label:
+          en_US: 10 seconds
+          zh_Hans: 10秒
+      - value: "15"
+        label:
+          en_US: 15 seconds
+          zh_Hans: 15秒
+      - value: "25"
+        label:
+          en_US: 25 seconds (Pro only)
+          zh_Hans: 25秒（仅Pro版）
+  - name: aspect_ratio
+    type: select
+    required: false
+    default: 16:9
+    label:
+      en_US: Aspect Ratio
+      zh_Hans: 画面比例
+    human_description:
+      en_US: Video aspect ratio
+      zh_Hans: 视频画面比例
+    llm_description: Aspect ratio of the generated video
+    form: form
+    options:
+      - value: 16:9
+        label:
+          en_US: 16:9 (Landscape)
+          zh_Hans: 16:9 (横屏)
+      - value: 9:16
+        label:
+          en_US: 9:16 (Portrait)
+          zh_Hans: 9:16 (竖屏)

@@ -1,0 +1,20 @@
+identity:
+  name: sora2
+  author: leon luo
+  label:
+    en_US: Sora2 Video Generation
+    zh_Hans: Sora2视频生成
+  description:
+    en_US: Generate videos using Sora2 AI model
+    zh_Hans: 使用Sora2 AI模型生成视频
+  icon: video
+credentials_schema:
+  - name: api_key
+    type: secret-input
+    required: true
+    label:
+      en_US: API Key
+      zh_Hans: API密钥
+    placeholder:
+      en_US: Enter your Zhenzhen platform API key
+      zh_Hans: 输入贞贞平台API密钥
