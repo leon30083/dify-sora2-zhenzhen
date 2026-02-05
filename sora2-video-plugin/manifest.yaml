@@ -13,3 +13,7 @@ tags:
   - sora2
   - ai
 created_at: "2025-02-05T00:00:00Z"
+tools:
+  - provider/sora2.yaml
+  - tools/text_to_video.yaml
+  - tools/image_to_video.yaml
