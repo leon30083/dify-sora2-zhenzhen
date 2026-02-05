@@ -9,7 +9,7 @@ if os.path.exists('sora2-video-plugin.difypkg'):
 files_to_include = [
     'manifest.yaml',
     'main.py',
-    '_assets/icon.svg',
+    'icon.svg',
     'provider/sora2.yaml',
     'provider/sora2.py',
     'tools/text_to_video.yaml',
