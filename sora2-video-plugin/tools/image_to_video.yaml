@@ -1,13 +1,12 @@
 identity:
   name: image_to_video
-  author: leon luo
+  author: leonluo
   label:
     en_US: Image to Video
     zh_Hans: 图生视频
   description:
     en_US: Generate video from image using Sora2
     zh_Hans: 使用Sora2根据图片生成视频
-  icon: video
 parameters:
   - name: prompt
     type: string

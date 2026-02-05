@@ -7,7 +7,6 @@ identity:
   description:
     en_US: Generate videos using Sora2 AI model
     zh_Hans: 使用Sora2 AI模型生成视频
-  icon: video
 credentials_schema:
   - name: api_key
     type: secret-input

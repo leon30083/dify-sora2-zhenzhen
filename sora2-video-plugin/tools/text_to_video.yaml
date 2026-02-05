@@ -1,13 +1,12 @@
 identity:
   name: text_to_video
-  author: leon luo
+  author: leonluo
   label:
     en_US: Text to Video
     zh_Hans: 文生视频
   description:
     en_US: Generate video from text prompt using Sora2
     zh_Hans: 使用Sora2根据文本描述生成视频
-  icon: video
 parameters:
   - name: prompt
     type: string
