@@ -1,0 +1,15 @@
+version: 0.0.1
+author: leon luo
+name: sora2-video-plugin
+label:
+  en_US: Sora2 Video Generation
+  zh_Hans: Sora2视频生成
+description:
+  en_US: Generate videos using Sora2 AI model from Zhenzhen platform
+  zh_Hans: 使用贞贞平台Sora2 AI模型生成视频
+icon: video
+tags:
+  - video
+  - sora2
+  - ai
+created_at: "2025-02-05T00:00:00Z"
